@@ -13,10 +13,12 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
     price = serializers.IntegerField(required=False, default=None)
     type = serializers.ChoiceField(choices=TYPE_CHOICES)
     date = serializers.DateTimeField()
+    children = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CategoryOrOffer
-        fields = ('id', 'name', 'parentId', 'price', 'type', 'date')
+        fields = ('id', 'name', 'parentId',
+                  'price', 'type', 'date', 'children')
 
     def validate(self, data):
         if data['type'] == 'OFFER' and 'price' not in data:
@@ -37,6 +39,9 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
             id=id,
             defaults=validated_data
         )
+        return obj
+
+    def get_children(self, obj):
         return obj
 
 

@@ -1,14 +1,13 @@
 from imports.models import CategoryOrOffer
-from rest_framework import status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 
 from .serializers import CategoryOrOfferSerializer, ImportSerializer
 
 
-class ImportViewSet(viewsets.ModelViewSet):
+class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = CategoryOrOffer.objects.all()
     serializer_class = CategoryOrOfferSerializer
-    http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):
 
@@ -33,3 +32,8 @@ class ImportViewSet(viewsets.ModelViewSet):
                 )
 
         return Response(status=status.HTTP_200_OK)
+
+
+class NodeViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = CategoryOrOffer.objects.all()
+    serializer_class = CategoryOrOfferSerializer
