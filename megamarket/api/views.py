@@ -1,8 +1,11 @@
+from django.http import Http404
 from imports.models import CategoryOrOffer
-from rest_framework import mixins, status, viewsets
+from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.response import Response
 
 from .serializers import CategoryOrOfferSerializer, ImportSerializer
+from .utils import (is_valid_uuid, process_children,
+                    VALIDATION_FAIL_RESPONSE)
 
 
 class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
@@ -17,6 +20,7 @@ class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         # extract date
         date = request.data['updateDate']
+        ids = []
 
         for item in request.data['items']:
             item['date'] = date
@@ -24,12 +28,12 @@ class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             # create or update data
             serializer = self.get_serializer(data=item)
 
-            if serializer.is_valid():
-                self.perform_create(serializer)
-            else:
-                return Response(
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            try:
+                serializer.is_valid(raise_exception=True)
+            except serializers.ValidationError:
+                pass
+            self.perform_create(serializer)
+            ids.append(item['id'])
 
         return Response(status=status.HTTP_200_OK)
 
@@ -37,3 +41,47 @@ class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 class NodeViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = CategoryOrOffer.objects.all()
     serializer_class = CategoryOrOfferSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        if not is_valid_uuid(self.kwargs['pk']):
+            return VALIDATION_FAIL_RESPONSE
+
+        try:
+            instance = self.get_object()
+        except Http404:
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data={
+                    'code': 404,
+                    'message': "Item not found"
+                }
+            )
+        serializer = self.get_serializer(instance)
+
+        data = serializer.data
+        if data['type'] == 'CATEGORY':
+            process_children(data)
+
+        return Response(data)
+
+
+class DeleteViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    queryset = CategoryOrOffer.objects.all()
+    serializer_class = CategoryOrOfferSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        if not is_valid_uuid(self.kwargs['pk']):
+            return VALIDATION_FAIL_RESPONSE
+
+        try:
+            instance = self.get_object()
+        except Http404:
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+                data={
+                    'code': 404,
+                    'message': "Item not found"
+                }
+            )
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_200_OK)

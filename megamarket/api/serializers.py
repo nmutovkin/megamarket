@@ -1,5 +1,19 @@
+from datetime import datetime
 from imports.models import CategoryOrOffer, TYPE_CHOICES
 from rest_framework import serializers
+
+
+ISO_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+
+
+class CustomDateTimeField(serializers.DateTimeField):
+    def to_representation(self, value):
+        value = super().to_representation(value)
+        value = datetime.strptime(value, ISO_FORMAT)
+        value = value.isoformat(timespec='milliseconds')
+        if value.endswith('+00:00'):
+            value = value[:-6] + 'Z'
+        return value
 
 
 class CategoryOrOfferSerializer(serializers.ModelSerializer):
@@ -12,7 +26,7 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
     )
     price = serializers.IntegerField(required=False, default=None)
     type = serializers.ChoiceField(choices=TYPE_CHOICES)
-    date = serializers.DateTimeField()
+    date = CustomDateTimeField()
     children = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -35,6 +49,14 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         id = validated_data.pop('id')
+
+        # update date of parents
+        parent = validated_data['parent']
+        while parent is not None:
+            parent.date = validated_data['date']
+            parent.save(update_fields=['date'])
+            parent = parent.parent
+
         obj, _ = CategoryOrOffer.objects.update_or_create(
             id=id,
             defaults=validated_data
@@ -42,7 +64,13 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
         return obj
 
     def get_children(self, obj):
-        return obj
+        if obj.children.exists():
+            return CategoryOrOfferSerializer(
+                obj.children.all(),
+                many=True
+            ).data
+        else:
+            return None
 
 
 class DummySerializer(serializers.Serializer):
