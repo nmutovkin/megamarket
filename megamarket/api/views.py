@@ -20,21 +20,22 @@ class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
         # extract date
         date = request.data['updateDate']
-        ids = []
 
+        # update date
         for item in request.data['items']:
             item['date'] = date
 
-            # create or update data
-            serializer = self.get_serializer(data=item)
+        serializer = self.get_serializer(
+            data=request.data['items'],
+            many=True
+        )
 
-            try:
-                serializer.is_valid(raise_exception=True)
-            except serializers.ValidationError:
-                pass
-            self.perform_create(serializer)
-            ids.append(item['id'])
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            return VALIDATION_FAIL_RESPONSE
 
+        self.perform_create(serializer)
         return Response(status=status.HTTP_200_OK)
 
 

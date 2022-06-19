@@ -1,4 +1,5 @@
 import uuid
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 from django.db import models
 
 
@@ -9,6 +10,8 @@ TYPE_CHOICES = [
 
 
 class CategoryOrOffer(models.Model):
+    objects = BulkUpdateOrCreateQuerySet.as_manager()
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField('Name', max_length=50)
     date = models.DateTimeField('Update date')

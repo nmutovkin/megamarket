@@ -16,13 +16,88 @@ class CustomDateTimeField(serializers.DateTimeField):
         return value
 
 
+class ParentField(serializers.UUIDField):
+    def to_representation(self, value):
+        if self.uuid_format == 'hex_verbose':
+            return value.id
+        else:
+            return getattr(value, self.uuid_format)
+
+
+class CategoryOrOfferListSerializer(serializers.ListSerializer):
+    def validate(self, data):
+        ids = [item['id'] for item in data]
+        parent_ids = [item['parent'] for item in data
+                      if item['parent'] is not None]
+
+        for parent_id in parent_ids:
+            if not CategoryOrOffer.objects.filter(
+                id=parent_id
+            ).exists() and parent_id not in ids:
+                raise serializers.ValidationError(
+                    "Parent id must correspond to an object"
+                )
+
+        return data
+
+    def create(self, validated_data):
+        fields_to_update = [
+            'name', 'parent',
+            'price', 'type', 'date'
+        ]
+
+        obj_list = []
+
+        for item in validated_data:
+            parent_id = item['parent']
+
+            if parent_id is not None:
+
+                # parent_id in already existing objects
+                parent = CategoryOrOffer.objects.filter(
+                    id=parent_id
+                ).first()
+
+                # suppose that parent is in current list
+                if parent is None:
+                    # find object in list
+                    parent = [
+                        obj for obj in obj_list if obj.id == parent_id
+                    ][0]
+
+            else:
+                parent = None
+
+            is_initial_object = True
+
+            while parent is not None:
+                parent.date = item['date']
+                if is_initial_object:  # update dict
+                    is_initial_object = False
+                    item['parent'] = parent
+
+                # add parent object to update list
+                obj_list.append(parent)
+                parent = parent.parent
+
+            obj_list.append(
+                CategoryOrOffer(**item)
+            )
+
+            # change validation data dict back
+            item['parent'] = parent_id
+
+        return CategoryOrOffer.objects.bulk_update_or_create(
+            obj_list, fields_to_update, match_field='id'
+        )
+
+
 class CategoryOrOfferSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField()
-    parentId = serializers.PrimaryKeyRelatedField(
+    parentId = ParentField(
         source='parent',
         allow_null=True,
-        default=None,
-        queryset=CategoryOrOffer.objects.all()
+        default=None
     )
     price = serializers.IntegerField(required=False, default=None)
     type = serializers.ChoiceField(choices=TYPE_CHOICES)
@@ -33,6 +108,7 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
         model = CategoryOrOffer
         fields = ('id', 'name', 'parentId',
                   'price', 'type', 'date', 'children')
+        list_serializer_class = CategoryOrOfferListSerializer
 
     def validate(self, data):
         if data['type'] == 'OFFER' and 'price' not in data:
@@ -46,22 +122,6 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
             )
 
         return data
-
-    def create(self, validated_data):
-        id = validated_data.pop('id')
-
-        # update date of parents
-        parent = validated_data['parent']
-        while parent is not None:
-            parent.date = validated_data['date']
-            parent.save(update_fields=['date'])
-            parent = parent.parent
-
-        obj, _ = CategoryOrOffer.objects.update_or_create(
-            id=id,
-            defaults=validated_data
-        )
-        return obj
 
     def get_children(self, obj):
         if obj.children.exists():

@@ -34,7 +34,7 @@ def is_valid_uuid(value):
 
 def process_children(data):
     prices = []
-    children = data['children']
+    children = data['children'] or []
 
     for child in children:
         if child['type'] == 'OFFER':
