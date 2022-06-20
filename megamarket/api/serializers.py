@@ -94,11 +94,11 @@ class CategoryOrOfferListSerializer(serializers.ListSerializer):
 
 class CategoryOrOfferSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField()
-    parentId = ParentField(
+    parentId = ParentField(  # noqa
         source='parent',
         allow_null=True,
         default=None
-    )  # noqa
+    )
     price = serializers.IntegerField(required=False, default=None)
     type = serializers.ChoiceField(choices=TYPE_CHOICES)
     date = CustomDateTimeField()
