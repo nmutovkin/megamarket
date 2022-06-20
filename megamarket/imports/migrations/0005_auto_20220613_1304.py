@@ -13,6 +13,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='categoryoroffer',
             name='type',
-            field=models.CharField(choices=[('OFFER', 'Offer'), ('CATEGORY', 'Category')], max_length=50, verbose_name='Type'),
+            field=models.CharField(choices=[
+                ('OFFER', 'Offer'),
+                ('CATEGORY', 'Category')],
+                max_length=50, verbose_name='Type'),
         ),
     ]

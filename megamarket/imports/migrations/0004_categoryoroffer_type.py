@@ -13,7 +13,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='categoryoroffer',
             name='type',
-            field=models.CharField(choices=[('Offer', 'Offer'), ('Category', 'Category')], default='Category', max_length=50, verbose_name='Type'),
+            field=models.CharField(choices=[
+                ('Offer', 'Offer'),
+                ('Category', 'Category')],
+                default='Category',
+                max_length=50,
+                verbose_name='Type'),
             preserve_default=False,
         ),
     ]

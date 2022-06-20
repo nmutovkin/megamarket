@@ -12,6 +12,9 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='categoryoroffer',
-            options={'ordering': ['type', 'name'], 'verbose_name': 'Entity', 'verbose_name_plural': 'Entities'},
+            options={
+                'ordering': ['type', 'name'],
+                'verbose_name': 'Entity',
+                'verbose_name_plural': 'Entities'},
         ),
     ]
