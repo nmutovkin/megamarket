@@ -1,8 +1,8 @@
+import uuid
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
-import uuid
-
 
 VALIDATION_FAIL_RESPONSE = Response(
             status=status.HTTP_400_BAD_REQUEST,

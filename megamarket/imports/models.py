@@ -1,7 +1,7 @@
 import uuid
+
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 from django.db import models
-
 
 TYPE_CHOICES = [
     ('OFFER', 'Offer'),

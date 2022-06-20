@@ -4,8 +4,7 @@ from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.response import Response
 
 from .serializers import CategoryOrOfferSerializer, ImportSerializer
-from .utils import (is_valid_uuid, process_children,
-                    VALIDATION_FAIL_RESPONSE)
+from .utils import VALIDATION_FAIL_RESPONSE, is_valid_uuid, process_children
 
 
 class ImportViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):

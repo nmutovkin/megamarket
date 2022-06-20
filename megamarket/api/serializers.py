@@ -1,7 +1,7 @@
 from datetime import datetime
-from imports.models import CategoryOrOffer, TYPE_CHOICES
-from rest_framework import serializers
 
+from imports.models import TYPE_CHOICES, CategoryOrOffer
+from rest_framework import serializers
 
 ISO_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
