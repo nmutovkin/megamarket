@@ -12,7 +12,7 @@ class CustomDateTimeField(serializers.DateTimeField):
         value = datetime.strptime(value, ISO_FORMAT)
         value = value.isoformat(timespec='milliseconds')
         if value.endswith('+00:00'):
-            value = value[:-6] + 'Z'
+            return value[:-6] + 'Z'
         return value
 
 
@@ -98,7 +98,7 @@ class CategoryOrOfferSerializer(serializers.ModelSerializer):
         source='parent',
         allow_null=True,
         default=None
-    )
+    )  # noqa
     price = serializers.IntegerField(required=False, default=None)
     type = serializers.ChoiceField(choices=TYPE_CHOICES)
     date = CustomDateTimeField()
@@ -139,4 +139,4 @@ class DummySerializer(serializers.Serializer):
 
 class ImportSerializer(serializers.Serializer):
     items = DummySerializer(many=True)
-    updateDate = serializers.DateTimeField()
+    updateDate = serializers.DateTimeField()  # noqa
