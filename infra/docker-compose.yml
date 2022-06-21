@@ -9,7 +9,7 @@ services:
       - ./.env
 
   web:
-    image: ferr546/megamarket_api
+    image: ferr546/megamarket_api:1.0
     restart: always
     depends_on:
       - db
