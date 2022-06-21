@@ -57,7 +57,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           port: ${{ secrets.SSH_PORT }}
-          timeout: 300s
+          debug: true
           script: |
             rm -f .env
             touch .env
