@@ -43,4 +43,4 @@ jobs:
           with:
             context: megamarket/
             push: true
-            tags: ferr546/megamerket_api:latest
+            tags: ferr546/megamerket_api
