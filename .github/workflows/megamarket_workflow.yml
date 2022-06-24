@@ -71,7 +71,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
-          port: ${{ secrests.SSH_PORT }}
+          port: ${{ secrets.SSH_PORT }}
           script: |
             rm -f .env
             touch .env
