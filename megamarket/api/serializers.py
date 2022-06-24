@@ -1,10 +1,9 @@
 from datetime import datetime
 
+from imports.models import TYPE_CHOICES, CategoryOrOffer
 from rest_framework import serializers
 from simple_history.utils import (bulk_create_with_history,
                                   bulk_update_with_history)
-
-from imports.models import TYPE_CHOICES, CategoryOrOffer
 
 from .utils import Node, process_children, process_siblings
 
