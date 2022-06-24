@@ -87,5 +87,5 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker-compose pull && sudo docker-compose up -d 
       - name: kill vpn
-          if: always()
-          run: sudo killall openvpn
+        if: always()
+        run: sudo killall openvpn
