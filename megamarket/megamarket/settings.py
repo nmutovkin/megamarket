@@ -61,7 +61,7 @@ ROOT_URLCONF = 'megamarket.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,23 +82,15 @@ WSGI_APPLICATION = 'megamarket.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': config('DB_NAME', default='name'),
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': config('DB_NAME',
+                       default=os.path.join(BASE_DIR, 'db.sqlite3')),
         'USER': config('POSTGRES_USER', default='user'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='password'),
         'HOST': config('DB_HOST', default='host'),
         'PORT': config('DB_PORT', default='123')
     }
 }
-
-# sqilte version
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-#     }
-# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -141,6 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'api.utils.custom_exception_handler'

@@ -137,7 +137,7 @@ class SalesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response({'items': serializer.data})
 
 
-class StatisticsViewSet(viewsets.ModelViewSet):
+class StatisticsViewSet(viewsets.GenericViewSet):
     queryset = CategoryOrOffer.objects.all()
     serializer_class = SalesCategoryOrOfferSerializer
 
