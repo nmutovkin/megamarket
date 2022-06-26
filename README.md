@@ -3,6 +3,7 @@
 ![example workflow](https://github.com/nmutovkin/megamarket/actions/workflows/megamarket_workflow.yml/badge.svg)
 
 MegaMarket - API веб-сервиса для анализа и сравнения цен на товары и различные категории товаров.
+Сервис написан на Python с использованием Django и Django REST Framework.
 Сервис доступен по ссылке https://experimental-1932.usr.yandex-academy.ru
 
 ## Документация
