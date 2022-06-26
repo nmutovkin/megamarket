@@ -52,6 +52,10 @@ def custom_exception_handler(exc, context):
         response.data['code'] = response.status_code
         if response.data['code'] == 404:
             message = 'Item not found'
+        elif response.data['code'] == 405:
+            message = 'Method not allowed'
+        elif response.data['code'] == 500:
+            message = 'Internal server error'
         else:
             message = 'Validation failed'
         response.data['message'] = message
