@@ -10,10 +10,6 @@ MegaMarket - API веб-сервиса для анализа и сравнени
 * Django REST Framework
 * Docker
 
-## Документация
-
-Документация API доступна по ссылке https://experimental-1932.usr.yandex-academy.ru/docs
-
 ## Локальный запуск проекта
 
 * Клонируем репозиторий на локальный компьютер ```git clone https://github.com/nmutovkin/megamarket.git```
